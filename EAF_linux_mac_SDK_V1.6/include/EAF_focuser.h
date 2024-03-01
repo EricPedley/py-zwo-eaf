@@ -6,6 +6,8 @@ any question feel free contact us:yang.zhou@zwoptical.com
 #ifndef EAF_FOCUSER_H
 #define EAF_FOCUSER_H
 
+#include <stdbool.h>
+
 #ifdef _WINDOWS
 #define EAF_API __declspec(dllexport)
 #else
