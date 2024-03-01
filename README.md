@@ -1,5 +1,7 @@
 # Python ZWO EAF Python bindings
 
+These are Python bindings for the manufacturer-provided C++ drivers for one specific model of Electronic Auto Focuser for an astronomy telescope.
+
 Tested on this product: https://astronomy-imaging-camera.com/product/eaf-5v/
 on Arch Linux x86-64. No plans to include support for more platforms. Original C++ drivers are from here: https://www.zwoastro.com/software/
 
