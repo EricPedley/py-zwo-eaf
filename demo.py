@@ -19,7 +19,7 @@ if __name__ == "__main__":
     print(f"Current position: {eaf.get_position()}")
 
     while True:
-        str_input = input("Enter position: ")
+        str_input = input("Enter position (or q to quit): ")
         if str_input in ["q", "quit", "exit"]:
             break
         target_pos = int(str_input)
