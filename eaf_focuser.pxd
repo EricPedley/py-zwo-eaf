@@ -19,16 +19,12 @@ cdef extern from "EAF_linux_mac_SDK_V1.6/include/EAF_focuser.h":
         EAF_ERROR_CLOSED
         EAF_ERROR_END = -1
 
-    cdef struct EAF_ID:
-        unsigned char id[8]
-
-    ctypedef EAF_ID EAF_SN
-
     int EAFGetNum()
     int EAFGetProductIDs(int* pPIDs)
     int EAFCheck(int iVID, int iPID)
     EAF_ERROR_CODE EAFGetID(int index, int* ID)
     EAF_ERROR_CODE EAFOpen(int ID)
+    EAF_ERROR_CODE EAFClose(int ID)
     EAF_ERROR_CODE EAFGetProperty(int ID, EAF_INFO* pInfo)
     EAF_ERROR_CODE EAFMove(int ID, int iStep)
     EAF_ERROR_CODE EAFStop(int ID)

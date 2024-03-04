@@ -2,22 +2,103 @@
 
 cimport eaf_focuser
 
+def _error_code_to_string(int error_code):
+    codes = {
+        0: "SUCCESS",
+        1: "INVALID_INDEX",
+        2: "INVALID_ID",
+        3: "INVALID_VALUE",
+        4: "REMOVED",
+        5: "MOVING",
+        6: "ERROR_STATE",
+        7: "GENERAL_ERROR",
+        8: "NOT_SUPPORTED",
+        9: "CLOSED",
+        -1: "END"
+    }
+    if error_code in codes:
+        return codes[error_code]
+    else:
+        return f"UNKNOWN ({error_code})"
+
+def getNumEAFs():
+    return eaf_focuser.EAFGetNum()
+
+def getEAFID(int index):
+    cdef int ID
+    error_code = eaf_focuser.EAFGetID(index, &ID)
+    if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+        raise ValueError(f"Error getting EAF ID. Code: {_error_code_to_string(error_code)}")
+    return ID
+
+
+cdef enum EAF_MOVING_STATUS:
+    NOT_MOVING
+    MOVING
+    MOVING_WITH_HANDLE
+
+
 cdef class EAF:
     cdef int ID
+    cdef int _max_step
 
     def __cinit__(self, int ID):
         self.ID = ID
+        eaf_focuser.EAFOpen(self.ID)
+        cdef int max_step
+        eaf_focuser.EAFGetMaxStep(self.ID, &max_step)
+        self._max_step = max_step
 
-    def open(self):
-        return eaf_focuser.EAFOpen(self.ID)
+    def __dealloc__(self):
+        eaf_focuser.EAFClose(self.ID)
 
-    def get_property(self):
-        cdef eaf_focuser.EAF_INFO info
-        ret = eaf_focuser.EAFGetProperty(self.ID, &info)
-        if ret == eaf_focuser.EAF_SUCCESS:
-            return info
+    def get_max_step(self):
+        return self._max_step
+
+    def move_to(self, int step):
+        assert 0 <= step <= self._max_step, f"Position {step} is out of range [0, {self._max_step}]"
+        error_code = eaf_focuser.EAFMove(self.ID, step)
+        if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+            raise ValueError(f"Error with EAF move. Code: {_error_code_to_string(error_code)}")
+
+    def stop(self):
+        error_code = eaf_focuser.EAFStop(self.ID)
+        if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+            raise ValueError(f"Error stopping EAF. Code: {_error_code_to_string(error_code)}")
+
+    def get_moving_status(self):
+        '''
+        Returns the moving status of the focuser.
+        The 3 states are NOT_MOVING, MOVING, and MOVING_WITH_HANDLE.
+        NOT_MOVING: The focuser is not moving.
+        MOVING: The focuser is moving, but it can be stopped by the `stop()` method.
+        MOVING_WITH_HANDLE: The focuser is moving, and it cannot be stopped by the `stop()` method.
+        '''
+        cdef int moving, handle_controlled # these are bools but cython won't compile `cdef bool ...`
+        error_code = eaf_focuser.EAFIsMoving(self.ID, &moving, &handle_controlled)
+        if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+            raise ValueError(f"Error checking if EAF is moving. Code: {_error_code_to_string(error_code)}")
+        if moving and handle_controlled:
+            return EAF_MOVING_STATUS.MOVING_WITH_HANDLE
+        elif moving:
+            return EAF_MOVING_STATUS.MOVING
         else:
-            return None
+            return EAF_MOVING_STATUS.NOT_MOVING
+    
+    def is_moving(self):
+        '''
+        Returns True if the focuser is moving, False otherwise.
 
-    def move(self, int position):
-        return eaf_focuser.EAFMove(self.ID, position)
+        This thing is inconsistent as hell. It's better to just check if
+        the position is changing, or if it's reached the target position and then
+        call `stop()`.
+        '''
+        return self.get_moving_status() != EAF_MOVING_STATUS.NOT_MOVING
+
+    def get_position(self):
+        cdef int position
+        error_code = eaf_focuser.EAFGetPosition(self.ID, &position)
+        if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+            raise ValueError(f"Error getting EAF position. Code: {_error_code_to_string(error_code)}")
+        return position
+
