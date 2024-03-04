@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     while True:
         str_input = input("Enter position: ")
-        if str_input == "exit" or str_input == "quit" or str_input == "q" or str_input == "e":
+        if str_input in ["q", "quit", "exit"]:
             break
         target_pos = int(str_input)
         eaf.move_to(target_pos)
