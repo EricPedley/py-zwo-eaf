@@ -14,5 +14,8 @@ extensions = [
 setup(
     ext_modules=cythonize(extensions),
     name="eaf_focuser",
-    author="Eric Pedley"
+    author="Eric Pedley",
+    author_email="ericpedley@gmail.com",
+    long_description="Python wrapper for the ZWO EAF Focuser C++ SDK",
+    version="1.0",
 )
