@@ -19,6 +19,7 @@ setup(
     name="zwo_eaf",
     author="Eric Pedley",
     author_email="ericpedley@gmail.com",
+    description="Python wrapper for ZWO EAF C++ SDK",
     long_description=long_description,
     long_description_content_type="text/markdown",
     version="1.0",
