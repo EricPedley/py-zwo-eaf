@@ -3,3 +3,6 @@ requires = ["cython", "setuptools"]
 
 [tools.setuptools]
 packages = ["src"]
+
+[project.urls]
+source = "https://github.com/EricPedley/py-zwo-eaf"
