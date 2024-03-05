@@ -1,4 +1,4 @@
-# eaf_focuser.pxd
+# zwo_eaf.pxd
 
 cdef extern from "EAF_linux_mac_SDK_V1.6/include/EAF_focuser.h":
     cdef struct _EAF_INFO:
