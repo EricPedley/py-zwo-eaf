@@ -1,2 +1,2 @@
-include src/eaf_focuser.pyx
+include src/zwo_eaf.pyx
 include src/EAF_linux_mac_SDK_V1.6/lib/x64/*

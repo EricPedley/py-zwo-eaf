@@ -2,8 +2,8 @@ from setuptools import setup, Extension
 from Cython.Build import cythonize
 
 extensions = [
-    Extension("eaf_focuser",
-        ["src/eaf_focuser.pyx"],
+    Extension("zwo_eaf",
+        ["src/zwo_eaf.pyx"],
         libraries=["EAFFocuser", "udev"],
         library_dirs=["src/EAF_linux_mac_SDK_V1.6/lib/x64/", "/usr/lib"],
         include_dirs=["src/EAF_linux_mac_SDK_V1.6/include"],
@@ -13,7 +13,7 @@ extensions = [
 
 setup(
     ext_modules=cythonize(extensions),
-    name="eaf_focuser",
+    name="zwo_eaf",
     author="Eric Pedley",
     author_email="ericpedley@gmail.com",
     long_description="Python wrapper for the ZWO EAF Focuser C++ SDK",

@@ -1,6 +1,6 @@
-# eaf_focuser.pyx
+# zwo_eaf.pyx
 
-cimport eaf_focuser
+cimport zwo_eaf
 
 def _error_code_to_string(int error_code):
     codes = {
@@ -22,12 +22,12 @@ def _error_code_to_string(int error_code):
         return f"UNKNOWN ({error_code})"
 
 def getNumEAFs():
-    return eaf_focuser.EAFGetNum()
+    return zwo_eaf.EAFGetNum()
 
 def getEAFID(int index):
     cdef int ID
-    error_code = eaf_focuser.EAFGetID(index, &ID)
-    if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+    error_code = zwo_eaf.EAFGetID(index, &ID)
+    if error_code != zwo_eaf.EAF_ERROR_CODE.EAF_SUCCESS:
         raise ValueError(f"Error getting EAF ID. Code: {_error_code_to_string(error_code)}")
     return ID
 
@@ -44,26 +44,26 @@ cdef class EAF:
 
     def __cinit__(self, int ID):
         self.ID = ID
-        eaf_focuser.EAFOpen(self.ID)
+        zwo_eaf.EAFOpen(self.ID)
         cdef int max_step
-        eaf_focuser.EAFGetMaxStep(self.ID, &max_step)
+        zwo_eaf.EAFGetMaxStep(self.ID, &max_step)
         self._max_step = max_step
 
     def __dealloc__(self):
-        eaf_focuser.EAFClose(self.ID)
+        zwo_eaf.EAFClose(self.ID)
 
     def get_max_step(self):
         return self._max_step
 
     def move_to(self, int step):
         assert 0 <= step <= self._max_step, f"Position {step} is out of range [0, {self._max_step}]"
-        error_code = eaf_focuser.EAFMove(self.ID, step)
-        if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+        error_code = zwo_eaf.EAFMove(self.ID, step)
+        if error_code != zwo_eaf.EAF_ERROR_CODE.EAF_SUCCESS:
             raise ValueError(f"Error with EAF move. Code: {_error_code_to_string(error_code)}")
 
     def stop(self):
-        error_code = eaf_focuser.EAFStop(self.ID)
-        if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+        error_code = zwo_eaf.EAFStop(self.ID)
+        if error_code != zwo_eaf.EAF_ERROR_CODE.EAF_SUCCESS:
             raise ValueError(f"Error stopping EAF. Code: {_error_code_to_string(error_code)}")
 
     def get_moving_status(self):
@@ -75,8 +75,8 @@ cdef class EAF:
         MOVING_WITH_HANDLE: The focuser is moving, and it cannot be stopped by the `stop()` method.
         '''
         cdef int moving, handle_controlled # these are bools but I can't figure out how to get it to compile with bool or bint. 
-        error_code = eaf_focuser.EAFIsMoving(self.ID, &moving, &handle_controlled)
-        if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+        error_code = zwo_eaf.EAFIsMoving(self.ID, &moving, &handle_controlled)
+        if error_code != zwo_eaf.EAF_ERROR_CODE.EAF_SUCCESS:
             raise ValueError(f"Error checking if EAF is moving. Code: {_error_code_to_string(error_code)}")
         if moving and handle_controlled:
             return EAF_MOVING_STATUS.MOVING_WITH_HANDLE
@@ -97,8 +97,8 @@ cdef class EAF:
 
     def get_position(self):
         cdef int position
-        error_code = eaf_focuser.EAFGetPosition(self.ID, &position)
-        if error_code != eaf_focuser.EAF_ERROR_CODE.EAF_SUCCESS:
+        error_code = zwo_eaf.EAFGetPosition(self.ID, &position)
+        if error_code != zwo_eaf.EAF_ERROR_CODE.EAF_SUCCESS:
             raise ValueError(f"Error getting EAF position. Code: {_error_code_to_string(error_code)}")
         return position
 

@@ -1,4 +1,4 @@
-from eaf_focuser import EAF, getNumEAFs, getEAFID
+from zwo_eaf import EAF, getNumEAFs, getEAFID
 
 if __name__ == "__main__":
     eaf_count = getNumEAFs()

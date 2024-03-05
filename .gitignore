@@ -1,4 +1,3 @@
 build
-eaf_focuser*.so
-eaf_focuser.egg-info
-eaf_focuser.c
+*.egg-info
+zwo_eaf.c
