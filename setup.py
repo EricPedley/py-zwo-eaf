@@ -18,4 +18,5 @@ setup(
     author_email="ericpedley@gmail.com",
     long_description="Python wrapper for the ZWO EAF Focuser C++ SDK",
     version="1.0",
+    platforms=["manylinux1_x86_64"]
 )
