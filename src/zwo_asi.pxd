@@ -1,9 +1,13 @@
 cdef extern from "sdk/include/ASICamera2.h":
 
-    cdef struct ASI_CAMERA_INFO:
+    cdef struct _ASI_CAMERA_INFO:
         pass
+        
+    ctypedef _ASI_CAMERA_INFO ASI_CAMERA_INFO
+    
 
     int ASIGetNumOfConnectedCameras()
+    int ASIGetCameraProperty(ASI_CAMERA_INFO *pASICameraInfo, int iCameraIndex)
     int ASIInitCamera(int cameraId)
     int ASIOpenCamera(int cameraId)
     int ASIGetControlValue(int cameraId, int controlId, int *value, int controlType)

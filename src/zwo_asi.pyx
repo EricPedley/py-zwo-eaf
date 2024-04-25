@@ -23,6 +23,10 @@ cdef class ASICamera:
 
     def __cinit__(self, int ID, int gain, int exposure_ms):
         self.ID = ID
+        print("num connected:", zwo_asi.ASIGetNumOfConnectedCameras())
+        cdef zwo_asi.ASI_CAMERA_INFO cam_info
+        info = zwo_asi.ASIGetCameraProperty(&cam_info, self.ID)
+        print(info)
         zwo_asi.ASIOpenCamera(self.ID)
         zwo_asi.ASIInitCamera(self.ID)
         zwo_asi.ASISetROIFormat(self.ID, 1920, 1080, 1, ASI_IMG_RAW16)
@@ -41,18 +45,20 @@ cdef class ASICamera:
         zwo_asi.ASIStopVideoCapture(self.ID)
         zwo_asi.ASICloseCamera(self.ID)
     
+    def get_frame_data(self):
+    
+        cdef unsigned char imgData[1920*1080*2]
+
+        zwo_asi.ASIGetVideoData(self.ID, imgData, 1920*1080*2, 500)
+
+        data = np.zeros(1920*1080*2, dtype=np.uint8)
+
+        for i in range(1920*1080*2):
+            data[i] = imgData[i]
+        
+        return data
+
     def get_frame(self):
-        cdef unsigned char[:] data = np.empty(1920*1080*2, dtype=np.uint8)
-
-
-        cdef Py_buffer buffer
-
-        PyObject_GetBuffer(data, &buffer, PyBUF_SIMPLE | PyBUF_ANY_CONTIGUOUS)
-        cdef unsigned char* my_ptr = <unsigned char *>buffer.buf
-        # use my_ptr
-
-        zwo_asi.ASIGetVideoData(self.ID, my_ptr, 1920*1080*2, 500)
-        mat = np.frombuffer(data, np.uint16).reshape(1080, 1920)
-        return mat
+        return self.get_frame_data().reshape(1080, 1920)
     
     
