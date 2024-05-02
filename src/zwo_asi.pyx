@@ -3,6 +3,7 @@
 cimport zwo_asi
 cimport numpy as np
 import numpy as np # doesn't conflict with cimport because cython magic
+import cv2 as cv
 
 from cpython.buffer cimport PyObject_GetBuffer, PyBuffer_Release, PyBUF_ANY_CONTIGUOUS, PyBUF_SIMPLE
 
@@ -57,6 +58,12 @@ cdef class ASICamera:
         return arr
 
     def get_frame(self):
-        return self.get_frame_data().reshape(1080, 1920)
+        frame_data = self.get_frame_data()
+
+        frame = frame_data.view(np.uint16).reshape(1080, 1920)
+        frame = (frame >> 8) | ((frame & 0xFF) << 8)
+        frame_color = cv.cvtColor(frame.astype(np.uint8), cv.COLOR_BAYER_RG2RGB)
+
+        return frame_color
     
     
