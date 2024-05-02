@@ -18,7 +18,10 @@ extensions = [
         ["src/zwo_asi.pyx"],
         libraries=["ASICamera2", "udev", "opencv_core"],
         library_dirs=["src/sdk/lib/x64/", "/usr/lib"],
-        include_dirs=["src/sdk/include"],
+        include_dirs=[
+            "src/sdk/include", 
+            "/home/eric/.local/lib/python3.10/site-packages/numpy/core/include" # should be np.get_include() but importing np here isn't working
+        ],
         extra_compile_args=['-static'],
         extra_link_args=[
             "-Wl,-rpath,/usr/lib,-rpath,src/sdk/lib/x64"

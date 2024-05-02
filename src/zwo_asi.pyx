@@ -1,7 +1,8 @@
 # zwo_asi.pyx
 
 cimport zwo_asi
-import numpy as np
+cimport numpy as np
+import numpy as np # doesn't conflict with cimport because cython magic
 
 from cpython.buffer cimport PyObject_GetBuffer, PyBuffer_Release, PyBUF_ANY_CONTIGUOUS, PyBUF_SIMPLE
 
@@ -46,17 +47,14 @@ cdef class ASICamera:
         zwo_asi.ASICloseCamera(self.ID)
     
     def get_frame_data(self):
-    
-        cdef unsigned char imgData[1920*1080*2]
+        # Assuming your NumPy array is named 'arr' (dtype should be character type)
+        cdef np.ndarray[dtype=np.uint8_t, ndim=1] arr = np.empty(1920*1080*2, dtype=np.uint8)
 
-        zwo_asi.ASIGetVideoData(self.ID, imgData, 1920*1080*2, 500)
+        cdef unsigned char* data_ptr = <unsigned char*>arr.data  # Direct pointer access (use with caution)
 
-        data = np.zeros(1920*1080*2, dtype=np.uint8)
-
-        for i in range(1920*1080*2):
-            data[i] = imgData[i]
+        zwo_asi.ASIGetVideoData(self.ID, data_ptr, 1920*1080*2, 500)
         
-        return data
+        return arr
 
     def get_frame(self):
         return self.get_frame_data().reshape(1080, 1920)
