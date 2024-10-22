@@ -1,4 +1,5 @@
 # zwo_eaf.pxd
+from libcpp cimport bool
 
 cdef extern from "sdk/include/EAF_focuser.h":
     cdef struct _EAF_INFO:
@@ -28,7 +29,7 @@ cdef extern from "sdk/include/EAF_focuser.h":
     EAF_ERROR_CODE EAFGetProperty(int ID, EAF_INFO* pInfo)
     EAF_ERROR_CODE EAFMove(int ID, int iStep)
     EAF_ERROR_CODE EAFStop(int ID)
-    EAF_ERROR_CODE EAFIsMoving(int ID, int* pbVal, int* pbHandControl)
+    EAF_ERROR_CODE EAFIsMoving(int ID, bool* pbVal, bool* pbHandControl)
     EAF_ERROR_CODE EAFGetPosition(int ID, int* piStep)
     EAF_ERROR_CODE EAFResetPostion(int ID, int iStep)
     EAF_ERROR_CODE EAFGetTemp(int ID, float* pfTemp)

@@ -74,7 +74,7 @@ cdef class EAF:
         MOVING: The focuser is moving, but it can be stopped by the `stop()` method.
         MOVING_WITH_HANDLE: The focuser is moving, and it cannot be stopped by the `stop()` method.
         '''
-        cdef int moving, handle_controlled # these are bools but I can't figure out how to get it to compile with bool or bint. 
+        cdef bool moving, handle_controlled # these are bools but I can't figure out how to get it to compile with bool or bint. 
         error_code = zwo_eaf.EAFIsMoving(self.ID, &moving, &handle_controlled)
         if error_code != zwo_eaf.EAF_ERROR_CODE.EAF_SUCCESS:
             raise ValueError(f"Error checking if EAF is moving. Code: {_error_code_to_string(error_code)}")
